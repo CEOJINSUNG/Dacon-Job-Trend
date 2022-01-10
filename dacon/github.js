@@ -40,6 +40,10 @@
             {
                 id: "git_commits_url",
                 dataType: tableau.dataTypeEnum.string
+            },
+            {
+                id: "languages_specific",
+                dataType: tableau.dataTypeEnum.string
             }
         ]
 
@@ -54,29 +58,54 @@
 
     gitConnector.getData = function(table, doneCallback) {
         var apiCall = "https://api.github.com/users/CEOJINSUNG/repos";
+        var tableData = [];
 
-        $.getJSON(apiCall, function(resp) {
-            var response = JSON.parse(JSON.stringify(resp)),
-                tableData = [];
-    
-            // Iterate over the JSON object
-            for (var i = 0, len = response.length; i < len; i++) {
-                tableData.push({
-                    "name": response[i].name,
-                    "node_id": response[i].node_id,
-                    "html_url": response[i].html_url,
-                    "description": response[i].description,
-                    "language": response[i].language,
-                    "languages_url": response[i].languages_url,
-                    "created_at": response[i].created_at,
-                    "updated_at": response[i].updated_at,
-                    "git_commits_url": response[i].git_commits_url,
-                });
+        $.ajax({
+            url: apiCall, 
+            method: 'GET',
+            dataType: 'json',
+            async: false,
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", "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");
+            },
+            success: function(resp) {
+                var response = JSON.parse(JSON.stringify(resp));
+        
+                // Iterate over the JSON object
+                for (var i = 0, len = response.length; i < len; i++) {
+                    tableData.push({
+                        "name": response[i].name,
+                        "node_id": response[i].node_id,
+                        "html_url": response[i].html_url,
+                        "description": response[i].description,
+                        "language": response[i].language,
+                        "languages_url": response[i].languages_url,
+                        "created_at": response[i].created_at,
+                        "updated_at": response[i].updated_at,
+                        "git_commits_url": response[i].git_commits_url,
+                    });
+                }
             }
-    
-            table.appendRows(tableData);
-            doneCallback();
         });
+
+        for (var i = 0; i < tableData.length; i++) {
+            $.ajax({
+                url: tableData[i].languages_url,
+                method: 'GET',
+                dataType: 'json',
+                async: false,
+                beforeSend: function(xhr){
+                    xhr.setRequestHeader("Authorization", "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");
+                },
+                success: function(res) {
+                    var response = JSON.stringify(res)
+                    tableData[i]["languages_specific"] = response
+                }
+            });
+        }
+        
+        table.appendRows(tableData);
+        doneCallback();
     };
 
     tableau.registerConnector(gitConnector);
