@@ -65,9 +65,9 @@
             method: 'GET',
             dataType: 'json',
             async: false,
-            beforeSend: function(xhr){
-                xhr.setRequestHeader("Authorization", "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");
-            },
+            // beforeSend: function(xhr){
+            //     xhr.setRequestHeader("Authorization", "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");
+            // },
             success: function(resp) {
                 var response = JSON.parse(JSON.stringify(resp));
         
@@ -94,16 +94,16 @@
                 method: 'GET',
                 dataType: 'json',
                 async: false,
-                beforeSend: function(xhr){
-                    xhr.setRequestHeader("Authorization", "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");
-                },
+                // beforeSend: function(xhr){
+                //     xhr.setRequestHeader("Authorization", "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");
+                // },
                 success: function(res) {
                     var response = JSON.stringify(res)
                     tableData[i]["languages_specific"] = response
                 }
             });
         }
-        
+        console.log(tableData)
         table.appendRows(tableData);
         doneCallback();
     };
